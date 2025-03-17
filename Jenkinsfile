@@ -6,14 +6,14 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Explicitly checkout from GitHub
+                // Use simple checkout without credentials
                 checkout([
                     $class: 'GitSCM',
-                    branches: [[name: '*/main']], // You can change this to your default branch
+                    branches: [[name: '*/main']],
                     extensions: [],
                     userRemoteConfigs: [[
-                        credentialsId: 'github-credentials', // Jenkins credentials ID for GitHub
-                        url: 'https://github.com/medlemine-djeidjah/demo.git' // Replace with your GitHub repo URL
+                        url: 'https://github.com/medlemine-djeidjah/demo.git'
+                        // Removed credentialsId since it's not configured
                     ]]
                 ])
             }
@@ -21,15 +21,16 @@ pipeline {
         
         stage('Build') {
             steps {
-                // Run Maven build
-                sh 'mvn clean compile'
+                // Use Maven wrapper instead of system Maven
+                sh 'chmod +x ./mvnw'
+                sh './mvnw clean compile'
             }
         }
         
         stage('Test') {
             steps {
-                // Run Maven tests
-                sh 'mvn test'
+                // Use Maven wrapper for tests
+                sh './mvnw test'
             }
             post {
                 always {
@@ -41,8 +42,8 @@ pipeline {
         
         stage('Package') {
             steps {
-                // Package the application
-                sh 'mvn package -DskipTests'
+                // Use Maven wrapper for packaging
+                sh './mvnw package -DskipTests'
             }
             post {
                 success {
