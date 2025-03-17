@@ -42,4 +42,28 @@ pipeline {
             }
         }
     }
+    
+    post {
+        always {
+            // Send email notification
+            emailext (
+                subject: "Build Status: ${currentBuild.fullDisplayName}",
+                body: """
+                    <p>Build Status: ${currentBuild.currentResult}</p>
+                    <p>Build Number: ${currentBuild.number}</p>
+                    <p>Check console output at <a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a></p>
+                """,
+                to: '23244@esp.mr',
+                from: 'medzomed1234@gmail.com',
+                replyTo: 'medzomed1234@gmail.com',
+                mimeType: 'text/html'
+            )
+        }
+        success {
+            echo 'Build succeeded!'
+        }
+        failure {
+            echo 'Build failed!'
+        }
+    }
 } 
