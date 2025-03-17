@@ -1,11 +1,7 @@
 pipeline {
     agent any
     
-    tools {
-        // Define the Maven tool installation to use
-        maven 'Maven 3'
-        jdk 'JDK 17'
-    }
+    // Removing specific tool names since they're not configured in Jenkins
     
     stages {
         stage('Checkout') {
