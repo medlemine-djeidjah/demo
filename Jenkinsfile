@@ -45,19 +45,24 @@ pipeline {
     
     post {
         always {
-            // Send email notification
-            emailext (
-                subject: "Build Status: ${currentBuild.fullDisplayName}",
-                body: """
-                    <p>Build Status: ${currentBuild.currentResult}</p>
-                    <p>Build Number: ${currentBuild.number}</p>
-                    <p>Check console output at <a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a></p>
-                """,
-                to: '23244@esp.mr',
-                from: 'medzomed1234@gmail.com',
-                replyTo: 'medzomed1234@gmail.com',
-                mimeType: 'text/html'
-            )
+            // Send email notification with more specific configuration
+            script {
+                def mailRecipients = "23244@esp.mr"
+                def jobName = currentBuild.fullDisplayName
+                def buildStatus = currentBuild.currentResult
+                
+                // Try using the mail step instead of emailext
+                mail(
+                    to: mailRecipients,
+                    subject: "Build Status: ${jobName}",
+                    body: """
+                        Build Status: ${buildStatus}
+                        Build Number: ${env.BUILD_NUMBER}
+                        Check console output at: ${env.BUILD_URL}
+                    """,
+                    from: 'medzomed1234@gmail.com'
+                )
+            }
         }
         success {
             echo 'Build succeeded!'
